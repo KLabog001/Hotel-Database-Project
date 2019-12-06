@@ -10,9 +10,9 @@ DROP TABLE IF EXISTS Repair CASCADE;
 DROP TABLE IF EXISTS Request CASCADE;
 DROP TABLE IF EXISTS Assigned CASCADE;
 
-DROP INDEX IF EXISTS custIDandNames CASCADE;
-DROP INDEX IF EXISTS hotelIDRoomno CASCADE;
-DROP INDEX IF EXISTS BookingDate CASCADE;
+-- ~ DROP INDEX IF EXISTS custIDandNames CASCADE;
+-- ~ DROP INDEX IF EXISTS hotelIDRoomno CASCADE;
+-- ~ DROP INDEX IF EXISTS BookingDate CASCADE;
 
 -- The below sql statements drops of the enum types if they exits
 DROP TYPE IF EXISTS StaffRole CASCADE;
@@ -233,6 +233,8 @@ COPY Assigned(asgID,
 FROM 'assigned.csv'
 WITH DELIMITER ',';		
 
+/*
+
 CREATE INDEX custIDandNames
 ON Customer
 (customerID, fName, lName);
@@ -245,3 +247,6 @@ CREATE INDEX Bookingdate
 ON Booking
 (bookingDate);
 	
+
+*/
+
