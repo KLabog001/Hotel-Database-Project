@@ -258,24 +258,104 @@ public class DBProject {
    }//end readChoice
    
    
-   public static void addCustomer(DBProject esql){
-	  // Given customer details add the customer in the DB 
-      // Your code goes here.
-      // ...
-      // ...
+  public static void addCustomer(DBProject esql){
+	// Given customer details add the customer in the DB
+	try {
+     
+      //~ System.out.println("Enter the customer ID:");
+      //~ String cID = in.readLine();
+      	String query = "SELECT MAX(customerID) FROM Customer";
+		Statement stmt = esql._connection.createStatement();
+		ResultSet rs = stmt.executeQuery(query);
+		rs.next();
+		int cID = rs.getInt(1) + 1;
+		//System.out.print(cID);
+      System.out.println("Enter the first name:");
+      String fN = in.readLine();
+      System.out.println("Enter the last name:");
+      String lN = in.readLine();
+      System.out.println("Enter the customer's address:");
+      String addr = in.readLine();
+      System.out.println("Enter the phone number:");
+      String phone = in.readLine();
+      System.out.println("Enter the date of birth:");
+      String DOB = in.readLine();
+      System.out.println("Enter Male/Female/Other for gender:");
+		String gender = in.readLine();
+		query = "INSERT INTO Customer (customerID,fName,lName,Address,phNo,DOB,gender) VALUES (";
+		query += cID + ",'" + fN + "','" + lN + "','" + addr + "'," + phone + ",'" + DOB + "','" + gender + "');";
+		//System.out.println(query);
+		esql.executeUpdate(query);
+
+		//~ String temp = "SELECT C.fname FROM Customer C WHERE C.customerID = ";
+		//~ temp += cID + ";";
+		//~ esql.executeQuery(temp);
+	}
+	catch (Exception e){
+		System.err.println (e.getMessage());
+	}
    }//end addCustomer
 
    public static void addRoom(DBProject esql){
 	  // Given room details add the room in the DB
-      // Your code goes here.
-      // ...
-      // ...
+	try {
+     
+      System.out.println("Enter the hotel ID:");
+      String hID = in.readLine();
+      String query = String.format("SELECT MAX(roomNo) FROM Room WHERE hotelID = '%s'", hID);
+		Statement stmt = esql._connection.createStatement();
+		ResultSet rs = stmt.executeQuery(query);
+		rs.next();
+		int rID = rs.getInt(1) + 1;
+		//System.out.println(rID);
+      //~ System.out.println("Enter the room number:");
+      //~ String rID = in.readLine();
+      System.out.println("Enter the room type:");
+		String rTy = in.readLine();
+		query = "INSERT INTO ROOM (hotelID, roomNo, roomType) VALUES (";
+		query += hID + "," + rID + ",'" + rTy + "');";
+		//~ System.out.println(query);
+		esql.executeUpdate(query);
+
+		//~ String temp = "SELECT R.roomType FROM Room R WHERE R.hotelID = ";
+		//~ temp += hID + "AND R.roomNo = " + rID + ";";
+		//~ esql.executeQuery(temp);
+	}
+	catch (Exception e) {
+		System.err.println(e.getMessage());
+	}
+	
    }//end addRoom
 
    public static void addMaintenanceCompany(DBProject esql){
       // Given maintenance Company details add the maintenance company in the DB
-      // ...
-      // ...
+	try {
+		String query = "SELECT MAX(cmpID) FROM MaintenanceCompany";
+		Statement stmt = esql._connection.createStatement();
+		ResultSet rs = stmt.executeQuery(query);
+		rs.next();
+		int cmpID = rs.getInt(1) + 1;
+		System.out.println(cmpID);
+      query = "INSERT INTO MaintenanceCompany (cmpID,name,address,isCertified) VALUES (";
+      //~ System.out.println("Enter the company ID:");
+      //~ String cmpID = in.readLine();
+      System.out.println("Enter the name of the company:");
+      String name = in.readLine();
+      System.out.println("Enter the address of the company:");
+      String addr = in.readLine();
+      System.out.println("Enter TRUE or FALSE if the company is certified:");
+		String isCer = in.readLine();
+
+		query += cmpID + ",'" + name + "','" + addr + "','" + isCer + "');";
+		System.out.println(query);
+		esql.executeUpdate(query);
+
+		String temp = "SELECT M.name FROM MaintenanceCompany M WHERE M.cmpID = " + cmpID;
+		esql.executeQuery(temp);
+	}
+	catch (Exception e) {
+		System.err.println(e.getMessage());
+	}
    }//end addMaintenanceCompany
 	//DONE KATHLEEN MAYBE
  public static void addRepair(DBProject esql){
@@ -409,55 +489,132 @@ public class DBProject {
 	  	System.out.print("\nEnter hotelID: ");
 		int hotelID_i = Integer.parseInt(in.readLine());
 		
+		//~ query = String.format("SELECT SSN FROM Staff WHERE SSN = %d AND employerID = %d", staffID_i, hotelID_i);
+		//~ rs = stmt.executeQuery(query);
+		//~ rs.next()
+		//~ if(rs.next())
+		//~ {
+			//~ System.out.print("Staff is assigned to proper hotel");
+		//~ }
+		//~ else
+		//~ {
+			//~ System.out.print("Staff doesnt work at this hotel");
+			//~ break;
+		
 		//Read roomNo from User input
 	  	System.out.print("\nEnter roomNo: ");
 		int roomNo_i = Integer.parseInt(in.readLine());
 		
 		query = String.format("INSERT INTO Assigned(asgID, staffID, hotelID, roomNo) VALUES (%d, %d, %d, %d)", asgID_i, staffID_i, hotelID_i, roomNo_i);
 		esql.executeUpdate(query);
+	}
+	catch (Exception e)
+	{
+				System.err.println(e.getMessage());
+	}
 			
-		}
-		catch(Exception e)
-		{
-			System.err.println(e.getMessage());
-		}
+		
    }//end assignHouseCleaningToRoom
    
-   public static void repairRequest(DBProject esql){
+     public static void repairRequest(DBProject esql){
 	  // Given a hotelID, Staff SSN, roomNo, repairID , date create a repair request in the DB
-      // Your code goes here.
-      // ...
-      // ...
+	try {
+      //INSERT INTO Repair (rID,hotelID,roomNo,mCompany,repairDate) VALUES ((SELECT MAX(rID) + 1 FROM Repair R), 1, 1, 0, '2000-1-1');
+	  System.out.println("Enter the hotel ID:");
+      String hotelID = in.readLine();
+      System.out.println("Enter the staff SSN:");
+      String staffssn = in.readLine();
+      System.out.println("Enter the room number:");
+      String roomNo = in.readLine();
+      System.out.println("Enter the request date:");
+      String date = in.readLine();
+      String query = "INSERT INTO Repair (rID,hotelID,roomNo,mCompany,repairDate) VALUES ((SELECT MAX(rID) + 1 FROM Repair R)," + hotelID + ", " + roomNo + ",0,'2000-1-1')";
+		
+		System.out.println(query);
+      esql.executeUpdate(query);
+
+		String temp ="SELECT MAX(rID) FROM Repair R";
+      esql.executeQuery(temp);
+      
+      String query1 = "INSERT INTO Request (reqID, managerID, repairID, requestDate) VALUES ((SELECT MAX(R.reqID) + 1 FROM Request R)," + staffssn + ", (SELECT MAX(rID) FROM Repair R),'" + date + "');";
+
+      System.out.println(query1);
+      esql.executeUpdate(query1);
+
+      String temp1 ="SELECT MAX(reqID) FROM Request R";
+      esql.executeQuery(temp1);
+	}
+	catch (Exception e){
+		System.err.println(e.getMessage());
+	}
    }//end repairRequest
    
    public static void numberOfAvailableRooms(DBProject esql){
-	  // Given a hotelID, get the count of rooms available 
-      // Your code goes here.
-      // ...
-      // ...
-   }//end numberOfAvailableRooms
-   
-   public static void numberOfBookedRooms(DBProject esql){
-	  // Given a hotelID, get the count of rooms booked
-      // Your code goes here.
-      // ...
-      // ...
+      // Given a hotelID, get the count of rooms available
+      //SELECT R FROM Room R WHERE R.hotelID = 381 AND R.roomno NOT IN (SELECT R.roomno FROM Booking B, Room R WHERE B.hotelID = 381 AND R.hotelID = 381 AND B.roomno = R.roomno);
+      try {
+          String query = "SELECT COUNT(R) FROM Room R WHERE R.hotelID = ";
+          System.out.println("Enter the hotel ID:");
+          String hotelID = in.readLine();
+  
+          query += hotelID + " AND R.roomno NOT IN (SELECT R.roomno FROM Booking B, Room R WHERE B.hotelID = " + hotelID +  "AND R.hotelID = " + hotelID + " AND B.roomno = R.roomno);";
+          System.out.println(query);
+          esql.executeQuery(query);
+      } catch (Exception e) {
+          System.err.println(e.getMessage());
+      }
+  }//end numberOfAvailableRooms
+  
+  public static void numberOfBookedRooms(DBProject esql){
+      // Given a hotelID, get the count of rooms booked
+      try {
+          String query = "SELECT COUNT(B) FROM Booking B WHERE B.hotelId = ";
+          System.out.println("Enter the hotel ID:");
+          String hotelID = in.readLine();
+  
+          query += hotelID + ";";
+          System.out.println(query);
+          esql.executeQuery(query);
+      } catch (Exception e) {
+          System.err.println(e.getMessage());
+      }
    }//end numberOfBookedRooms
-   
+  
    public static void listHotelRoomBookingsForAWeek(DBProject esql){
-	  // Given a hotelID, date - list all the rooms available for a week(including the input date) 
-      // Your code goes here.
-      // ...
-      // ...
+      // Given a hotelID, date - list all the rooms available for a week(including the input date) 
+      try {
+          String query = "SELECT B FROM Booking B WHERE B.hotelId = ";
+          System.out.println("Enter the hotel ID:");
+          String hotelID = in.readLine();
+          System.out.println("Enter the starting date:");
+          String date = in.readLine();
+          
+          query += hotelID + " and B.bookingDate <= (DATE '" + date + "' + INTERVAL '7 day') and B.bookingDate > '" + date + "';";
+          System.out.println(query);
+          esql.executeQuery(query);
+      } catch (Exception e) {
+          System.err.println(e.getMessage());
+      }
    }//end listHotelRoomBookingsForAWeek
-   
+  
    public static void topKHighestRoomPriceForADateRange(DBProject esql){
-	  // List Top K Rooms with the highest price for a given date range
-      // Your code goes here.
-      // ...
-      // ...
+      // List Top K Rooms with the highest price for a given date range
+      try {
+          String query = "SELECT B FROM Booking B WHERE B.bookingDate >= '";
+          System.out.println("Enter first date:");
+          String date1 = in.readLine();
+          System.out.println("Enter second date:");
+          String date2 = in.readLine();
+          System.out.println("Enter max number of rooms to display:");
+          String k = in.readLine();
+  
+          query += date1 + "' AND B.bookingDate <= '" + date2 + "' ORDER BY B.price DESC LIMIT " + k;
+          System.out.println(query);
+          esql.executeQuery(query);
+      } catch (Exception e) {
+          System.err.println(e.getMessage());
+      }
    }//end topKHighestRoomPriceForADateRange
-   
    
    //DONE KATHLEEN MAYBE
    public static void topKHighestPriceBookingsForACustomer(DBProject esql){
