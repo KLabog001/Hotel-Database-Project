@@ -398,6 +398,7 @@ public class DBProject {
 		ResultSet rs = stmt.executeQuery(query);
 		rs.next();
 		int asgID_i = rs.getInt(1) + 1;
+		
 		//System.out.println(asgID_i); // Testing that asgID_i increments properly
 		
 		//Read SSN from User input
@@ -490,6 +491,7 @@ public class DBProject {
 		while (rs.next()) {
 			for(int i = 1; i <= numCol; ++i)
 			{
+				
 				System.out.print(rsmd.getColumnName(i) + " = " + rs.getString(i));
 				System.out.print("\t");
 				++rowCount;
@@ -527,15 +529,15 @@ public class DBProject {
 	  	System.out.print("\nEnter hotelID: ");
 		int hotelID_i = Integer.parseInt(in.readLine());
 		
-		//Read bookingDate from User input
+		//Read start date from User input
 		System.out.print("\nEnter the start Date (dd/mm/yyyy): ");
-		//String bookingDate_i = in.readLine();
+		//String start Date_i = in.readLine();
 		String dateFormat = "MM/dd/YYYY";
 		Date startDate_i = new SimpleDateFormat(dateFormat).parse(in.readLine());
 		
-		//Read bookingDate from User input
+		//Read end date from User input
 		System.out.print("\nEnter the end Date (dd/mm/yyyy): ");
-		//String bookingDate_i = in.readLine();
+		//String end Date_i = in.readLine();
 		Date endDate_i = new SimpleDateFormat(dateFormat).parse(in.readLine());
 		
 		query = String.format("SELECT SUM(price) FROM Booking WHERE hotelID = %d AND customer = %d AND bookingDate >= '%s' AND bookingDate <= '%s'", hotelID_i, customerID_i, startDate_i, endDate_i);
