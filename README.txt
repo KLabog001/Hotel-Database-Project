@@ -1,6 +1,6 @@
 --------------------------------------------------------------------------		
 			CS 166 Databases Project phase 3
-----------------------------------------------------------------------------
+--------------------------------------------------------------------------
 Folder structure 
 > data - holds the necessary data files, these are used by create.sql to insert data into the tables 
 > java - holds DBproject.java, Boiler plate code. Your code goes here!
@@ -14,6 +14,8 @@ Notes:
 > Run postgresql .sh files to setup your DB
 > Copy data file to DB temp folder before you run create.sql, else the data will not be inserting in the tables.
 > Run compile.sh, to start your java program
+
+By Kathleen and Melvin
 
 Files modified: DBProject.java
 createPostgreDB.sh copies data files to tmp
