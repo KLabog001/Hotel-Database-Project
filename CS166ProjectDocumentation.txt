@@ -25,7 +25,10 @@ Queries: 1-3, 7-11
 		-	Input will be a single date. Range will be date through date + 7 days
 -	11. Get top k rooms with highest price for a date range
 		-	Will set younger date as 1st date and older date as second date
-
+		
+-	Other Task Performed:
+	
+-	Add input validation for 6,7,12,13,16
 
 Kathleen Labog
 Queries: 4-6, 12-16
@@ -62,7 +65,8 @@ Queries: 4-6, 12-16
 -	16. Get number of repairs occurred per year for a given hotel room
 	Assumptions:
 		-	Read hotelID and roomNo from User input
--	Documentation
+		
+-	Other Task Performed:
 
 -	Indexes created in index.sql
 		-custIDandNames - (customerID, fName, lName) - Q12 & 13 ask for customer first and last name to get customerID
@@ -74,7 +78,6 @@ Queries: 4-6, 12-16
 		-	import java.util.Calendar;
 		-	import java.util.Scanner;
 		-	import java.text.ParseException;
--	Fixed key ID autogeneration for queries 1-3
--	Add input validation for 6,7,12,13,16
+-	Added key ID autogeneration for queries 1-3
 
 
