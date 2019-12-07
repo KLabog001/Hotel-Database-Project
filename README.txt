@@ -15,5 +15,6 @@ Notes:
 > Copy data file to DB temp folder before you run create.sql, else the data will not be inserting in the tables.
 > Run compile.sh, to start your java program
 
-
- 
+Files modified: DBProject.java
+createPostgreDB.sh copies data files to tmp
+create.sql has contents of index.sql commented out
