@@ -32,6 +32,7 @@ import java.text.ParseException;
  * work with PostgreSQL JDBC drivers.
  *
  */
+
 public class DBProject {
 
    // reference to physical database connection.
@@ -335,19 +336,19 @@ public class DBProject {
 		ResultSet rs = stmt.executeQuery(query);
 		rs.next();
 		int cmpID = rs.getInt(1) + 1;
-		System.out.println(cmpID);
-      query = "INSERT INTO MaintenanceCompany (cmpID,name,address,isCertified) VALUES (";
-      //~ System.out.println("Enter the company ID:");
-      //~ String cmpID = in.readLine();
-      System.out.println("Enter the name of the company:");
-      String name = in.readLine();
-      System.out.println("Enter the address of the company:");
-      String addr = in.readLine();
-      System.out.println("Enter TRUE or FALSE if the company is certified:");
+		//System.out.println(cmpID);
+		query = "INSERT INTO MaintenanceCompany (cmpID,name,address,isCertified) VALUES (";
+		//~ System.out.println("Enter the company ID:");
+		//~ String cmpID = in.readLine();
+		System.out.println("Enter the name of the company:");
+		String name = in.readLine();
+		System.out.println("Enter the address of the company:");
+		String addr = in.readLine();
+		System.out.println("Enter TRUE or FALSE if the company is certified:");
 		String isCer = in.readLine();
 
 		query += cmpID + ",'" + name + "','" + addr + "','" + isCer + "');";
-		System.out.println(query);
+		//System.out.println(query);
 		esql.executeUpdate(query);
 
 		String temp = "SELECT M.name FROM MaintenanceCompany M WHERE M.cmpID = " + cmpID;
@@ -484,11 +485,22 @@ public class DBProject {
 		//Read SSN from User input
 	  	System.out.print("\nEnter Staff SSN: ");
 		int staffID_i = Integer.parseInt(in.readLine());
-		
+		String staff_check_query = String.format("SELECT S FROM Staff S WHERE S.SSN = %d AND role = 'HouseCleaning'", staffID_i);
+		rs = stmt.executeQuery(staff_check_query);
+		if (rs.next() == false){
+			System.out.print("Given Staff SSN is not a HouseCleaning\n");
+			return;
+		}
 		//Read hotelID from User input
 	  	System.out.print("\nEnter hotelID: ");
 		int hotelID_i = Integer.parseInt(in.readLine());
-		
+		String staff_hotel_check = String.format("SELECT S FROM Staff S WHERE S.SSN = %d AND S.employerID = %d", staffID_i, hotelID_i);
+		rs = stmt.executeQuery(staff_hotel_check);
+		if (rs.next() == false) {
+			System.out.print("Given Staff SSN does not work at the given Hotel ID\n");
+			return;
+		}
+		//System.out.print(i);
 		//~ query = String.format("SELECT SSN FROM Staff WHERE SSN = %d AND employerID = %d", staffID_i, hotelID_i);
 		//~ rs = stmt.executeQuery(query);
 		//~ rs.next()
@@ -504,6 +516,13 @@ public class DBProject {
 		//Read roomNo from User input
 	  	System.out.print("\nEnter roomNo: ");
 		int roomNo_i = Integer.parseInt(in.readLine());
+
+		String room_hotel_check = String.format("SELECT R FROM Room R WHERE R.roomNo = %s AND R.hotelID = %s", roomNo_i, hotelID_i);
+		rs = stmt.executeQuery(room_hotel_check);
+		if (rs.next() == false) {
+			System.out.print("Given Room ID does not exist at the given Hotel ID\n");
+			return;
+		}
 		
 		query = String.format("INSERT INTO Assigned(asgID, staffID, hotelID, roomNo) VALUES (%d, %d, %d, %d)", asgID_i, staffID_i, hotelID_i, roomNo_i);
 		esql.executeUpdate(query);
@@ -512,41 +531,64 @@ public class DBProject {
 	{
 				System.err.println(e.getMessage());
 	}
-			
 		
    }//end assignHouseCleaningToRoom
    
      public static void repairRequest(DBProject esql){
 	  // Given a hotelID, Staff SSN, roomNo, repairID , date create a repair request in the DB
 	try {
-      //INSERT INTO Repair (rID,hotelID,roomNo,mCompany,repairDate) VALUES ((SELECT MAX(rID) + 1 FROM Repair R), 1, 1, 0, '2000-1-1');
-	  System.out.println("Enter the hotel ID:");
-      String hotelID = in.readLine();
-      System.out.println("Enter the staff SSN:");
-      String staffssn = in.readLine();
-      System.out.println("Enter the room number:");
-      String roomNo = in.readLine();
-      System.out.println("Enter the request date:");
-      String date = in.readLine();
-      String query = "INSERT INTO Repair (rID,hotelID,roomNo,mCompany,repairDate) VALUES ((SELECT MAX(rID) + 1 FROM Repair R)," + hotelID + ", " + roomNo + ",0,'2000-1-1')";
+		//INSERT INTO Repair (rID,hotelID,roomNo,mCompany,repairDate) VALUES ((SELECT MAX(rID) + 1 FROM Repair R), 1, 1, 0, '2000-1-1');
+		Statement stmt = esql._connection.createStatement();
 		
-		System.out.println(query);
-      esql.executeUpdate(query);
+		System.out.println("Enter the hotel ID:");
+		String hotelID = in.readLine();
+		System.out.println("Enter the staff SSN:");
+		String staffssn = in.readLine();
+		String staff_role_check = String.format("SELECT S FROM Staff S WHERE S.SSN = %s AND role = 'Manager'", staffssn);
+		ResultSet rs = stmt.executeQuery(staff_role_check);
+		if (rs.next() == false) {
+			System.out.print("Given Staff SSN is not a Manager\n");
+			return;
+		}
 
-		String temp ="SELECT MAX(rID) FROM Repair R";
-      esql.executeQuery(temp);
-      
-      String query1 = "INSERT INTO Request (reqID, managerID, repairID, requestDate) VALUES ((SELECT MAX(R.reqID) + 1 FROM Request R)," + staffssn + ", (SELECT MAX(rID) FROM Repair R),'" + date + "');";
+		String staff_hotel_check = String.format("SELECT S FROM Staff S WHERE S.SSN = %s AND S.employerID = %s", staffssn, hotelID);
+		rs = stmt.executeQuery(staff_hotel_check);
+		if (rs.next() == false) {
+			System.out.print("Given Staff SSN does not work at the given Hotel ID\n");
+			return;
+		}
 
-      System.out.println(query1);
-      esql.executeUpdate(query1);
+		System.out.println("Enter the room number:");
+		String roomNo = in.readLine();
 
-      String temp1 ="SELECT MAX(reqID) FROM Request R";
-      esql.executeQuery(temp1);
-	}
-	catch (Exception e){
-		System.err.println(e.getMessage());
-	}
+		String room_hotel_check = String.format("SELECT R FROM Room R WHERE R.roomNo = %s AND R.hotelID = %s", roomNo, hotelID);
+		rs = stmt.executeQuery(room_hotel_check);
+		if (rs.next() == false) {
+			System.out.print("Given Room ID does not exist at the given Hotel ID\n");
+			return;
+		}
+
+		System.out.println("Enter the request date (YYYY/MM/dd):");
+		String date = in.readLine();
+		String query = "INSERT INTO Repair (rID,hotelID,roomNo,mCompany,repairDate) VALUES ((SELECT MAX(rID) + 1 FROM Repair R)," + hotelID + ", " + roomNo + ",0,'2000-1-1')";
+			
+			System.out.println(query);
+		esql.executeUpdate(query);
+
+			//String temp ="SELECT MAX(rID) FROM Repair R";
+		//esql.executeQuery(temp);
+		
+		String query1 = "INSERT INTO Request (reqID, managerID, repairID, requestDate) VALUES ((SELECT MAX(R.reqID) + 1 FROM Request R)," + staffssn + ", (SELECT MAX(rID) FROM Repair R),'" + date + "');";
+
+		System.out.println(query1);
+		esql.executeUpdate(query1);
+
+		//String temp1 ="SELECT MAX(reqID) FROM Request R";
+		//esql.executeQuery(temp1);
+		}
+		catch (Exception e){
+			System.err.println(e.getMessage());
+		}
    }//end repairRequest
    
    public static void numberOfAvailableRooms(DBProject esql){
@@ -604,16 +646,26 @@ public class DBProject {
           System.out.println("Enter first date:");
           String date1 = in.readLine();
           System.out.println("Enter second date:");
-          String date2 = in.readLine();
+		  String date2 = in.readLine();
+		  String dateFormat = "YYYY/MM/dd";
+		  
           System.out.println("Enter max number of rooms to display:");
           String k = in.readLine();
-  
-          query += date1 + "' AND B.bookingDate <= '" + date2 + "' ORDER BY B.price DESC LIMIT " + k;
+
+		  Date d1 = new SimpleDateFormat(dateFormat).parse(date1);
+		  Date d2 = new SimpleDateFormat(dateFormat).parse(date2);
+		  if (d1.after(d2) == true) {
+			query += date2 + "' AND B.bookingDate <= '" + date1 + "' ORDER BY B.price DESC LIMIT " + k;
+		  }
+		  else {
+			query += date1 + "' AND B.bookingDate <= '" + date2 + "' ORDER BY B.price DESC LIMIT " + k;
+		  }
+          
           System.out.println(query);
           esql.executeQuery(query);
       } catch (Exception e) {
           System.err.println(e.getMessage());
-      }
+	  }
    }//end topKHighestRoomPriceForADateRange
    
    //DONE KATHLEEN MAYBE
@@ -636,7 +688,10 @@ public class DBProject {
 		Statement stmt = esql._connection.createStatement();
 		String query = String.format("SELECT customerID FROM Customer WHERE fName = '%s' AND lName ='%s'", fName_i, lName_i);
 		ResultSet rs = stmt.executeQuery(query);
-		rs.next();
+		if (rs.next() == false) {
+			System.out.print("User does not exist in customer database\n");
+			return;
+		}
 		int customerID_i = Integer.parseInt(rs.getString(1));
 		
 		query = String.format("SELECT B.bID, B.price FROM Booking B WHERE customer = %d ORDER BY B.price DESC LIMIT %d", customerID_i, K_i);
@@ -679,7 +734,10 @@ public class DBProject {
 		Statement stmt = esql._connection.createStatement();
 		String query = String.format("SELECT customerID FROM Customer WHERE fName = '%s' AND lName ='%s'", fName_i, lName_i);
 		ResultSet rs = stmt.executeQuery(query);
-		rs.next();
+		if (rs.next() == false) {
+			System.out.print("User does not exist in customer database\n");
+			return;
+		}
 		int customerID_i = Integer.parseInt(rs.getString(1));
 		
 		//Read hotelID from User input
@@ -801,10 +859,17 @@ public class DBProject {
 		//Read roomNo from User input
 	  	System.out.print("\nEnter roomNo: ");
 		int roomNo_i = Integer.parseInt(in.readLine());
-		
-		String query = String.format("SELECT COUNT(rID), Extract(YEAR FROM repairDate) FROM Repair WHERE hotelID = %d AND roomNo = %d GROUP BY Extract(YEAR FROM repairDate)", hotelID_i, roomNo_i);
+
 		Statement stmt = esql._connection.createStatement();
-		ResultSet rs = stmt.executeQuery(query);
+		String room_hotel_check = String.format("SELECT R FROM Room R WHERE R.roomNo = %d AND R.hotelID = %d", roomNo_i, hotelID_i);
+		ResultSet rs = stmt.executeQuery(room_hotel_check);
+		if (rs.next() == false) {
+			System.out.print("Given Room ID does not exist at the given Hotel ID\n");
+			return;
+		}
+
+		String query = String.format("SELECT COUNT(rID), Extract(YEAR FROM repairDate) FROM Repair WHERE hotelID = %d AND roomNo = %d GROUP BY Extract(YEAR FROM repairDate)", hotelID_i, roomNo_i);
+		rs = stmt.executeQuery(query);
 		ResultSetMetaData rsmd = rs.getMetaData ();
         int numCol = rsmd.getColumnCount ();
         int rowCount = 0;
